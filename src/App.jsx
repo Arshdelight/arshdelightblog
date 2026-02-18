@@ -6,10 +6,12 @@ import Blog from './pages/Blog';
 import CreatePost from './pages/CreatePost';
 import EditPost from './pages/EditPost';
 import ManagePosts from './pages/ManagePosts';
+import About from './pages/About';
 import SignIn from './components/SignIn';
 import SignUp from './components/SignUp';
 import Dashboard from './components/Dashboard';
 import { AuthContextProvider } from './contexts/AuthContext';
+import 'font-awesome/css/font-awesome.min.css';
 
 function App() {
   return (
@@ -26,6 +28,7 @@ function App() {
               <Blog />
             </Layout>
           } />
+          <Route path="/about" element={<About />} />
           <Route path="/create-post" element={<CreatePost />} />
           <Route path="/post/:slug" element={
             <Layout>

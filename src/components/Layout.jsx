@@ -24,9 +24,15 @@ const Layout = ({ children }) => {
           </div>
           
           {/* 中间：导航链接（仅在中等屏幕及以上显示） */}
-          <div className="hidden md:flex items-center">
+          <div className="hidden md:flex items-center space-x-8">
             <Link to="/" className="text-lg font-medium text-[#164E63] hover:text-[#0891B2] transition-colors">
               首页
+            </Link>
+            <Link to="/blog" className="text-lg font-medium text-[#164E63] hover:text-[#0891B2] transition-colors">
+              博客
+            </Link>
+            <Link to="/about" className="text-lg font-medium text-[#164E63] hover:text-[#0891B2] transition-colors">
+              关于本站
             </Link>
           </div>
           

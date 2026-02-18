@@ -7,6 +7,7 @@ import ReactMarkdown from 'react-markdown';
 import supabase from '../services/SupabaseClient';
 import PrivateRoute from '../components/PrivateRoute';
 import Layout from '../components/Layout';
+import pinyin from 'pinyin';
 
 const CreatePost = () => {
   const { session } = useAuth();
@@ -15,6 +16,7 @@ const CreatePost = () => {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [slug, setSlug] = useState('');
+  const [isSlugManuallyModified, setIsSlugManuallyModified] = useState(false);
   const [isPublished, setIsPublished] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -27,19 +29,33 @@ const CreatePost = () => {
 
   // 生成 slug
   const generateSlug = (title) => {
-    return title
+    // 将中文转换为拼音
+    const pinyinTitle = pinyin(title, {
+      style: pinyin.STYLE_NORMAL,
+      heteronym: false
+    }).flat().join(' ');
+    
+    // 生成年月日时间戳
+    const now = new Date();
+    const timestamp = `${now.getFullYear()}${String(now.getMonth() + 1).padStart(2, '0')}${String(now.getDate()).padStart(2, '0')}`;
+    
+    // 生成 slug
+    const slugWithoutTimestamp = pinyinTitle
       .toLowerCase()
       .replace(/[^a-z0-9\s-]/g, '')
       .trim()
       .replace(/\s+/g, '-')
       .replace(/-+/g, '-');
+    
+    // 组合 slug 和时间戳
+    return `${slugWithoutTimestamp}-${timestamp}`;
   };
 
   // 当标题变化时，自动生成 slug
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
-    if (!slug) {
+    if (!isSlugManuallyModified) {
       setSlug(generateSlug(newTitle));
     }
   };
@@ -165,7 +181,10 @@ const CreatePost = () => {
             type="text"
             id="slug"
             value={slug}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => {
+              setSlug(e.target.value);
+              setIsSlugManuallyModified(true);
+            }}
             className="w-full px-4 py-3 bg-[#ECFEFF] text-[#164E63] border border-[#22D3EE]/30 rounded-lg focus:outline-none focus:border-[#0891B2] transition-colors"
             placeholder="请输入友好的 URL 路径"
             required
