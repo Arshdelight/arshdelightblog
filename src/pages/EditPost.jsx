@@ -5,6 +5,7 @@ import Editor from 'react-markdown-editor-lite';
 import 'react-markdown-editor-lite/lib/index.css';
 import ReactMarkdown from 'react-markdown';
 import supabase from '../services/SupabaseClient';
+import Loading from '../components/Loading';
 import PrivateRoute from '../components/PrivateRoute';
 import Layout from '../components/Layout';
 
@@ -142,11 +143,7 @@ const EditPost = () => {
   };
 
   if (loading) {
-    return (
-      <div className="container mx-auto max-w-4xl px-4 md:px-6 py-12">
-        <h2 className="text-2xl font-bold font-['Outfit',sans-serif] text-[#164E63] mb-4">加载中...</h2>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error) {

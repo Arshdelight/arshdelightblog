@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useParams, Link } from 'react-router-dom';
 import supabase from '../services/SupabaseClient';
+import Loading from '../components/Loading';
 import ReactMarkdown from 'react-markdown';
 
 const Post = () => {
@@ -60,14 +61,7 @@ const Post = () => {
   }, [slug]);
 
   if (loading) {
-    return (
-      <div>
-        <Link to="/" className="inline-flex items-center text-[#0891B2] hover:text-[#0E7490] transition-colors font-medium mb-8">
-          ← 返回首页
-        </Link>
-        <h2 className="text-2xl font-bold font-['Outfit',sans-serif] text-[#164E63] mb-4">加载中...</h2>
-      </div>
-    );
+    return <Loading />;
   }
 
   if (error || !post) {

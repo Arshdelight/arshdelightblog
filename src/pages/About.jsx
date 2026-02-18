@@ -19,7 +19,10 @@ const About = () => {
             Arshdelight 是一个博客网站，用于分享我的思考、创作和学习心得。
           </p>
           <p className="mb-4">
-            网站使用 React、Tailwind CSS 和 Supabase 构建，部署在 Vercel 上。
+            注册Arshdelight会员, 您也可以免费在本站记录文章, 但本站暂时无法保证服务的稳定性，不承担任何责任。
+          </p>
+          <p className="mb-4">
+            话虽如此，我会尽我最大的努力维护和完善这个网站，确保您的使用体验。最终完成之后会开源代码。
           </p>
           
           <h2 className="text-xl font-semibold text-[#164E63] mb-4">联系我们</h2>
@@ -30,10 +33,6 @@ const About = () => {
             cjhzisme@163.com
           </p>
           
-          <h2 className="text-xl font-semibold text-[#164E63] mb-4">版权信息</h2>
-          <p>
-            © 2026 Arshdelight. All rights reserved.
-          </p>
         </div>
       </div>
     </Layout>

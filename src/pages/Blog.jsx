@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import supabase from '../services/SupabaseClient';
+import Loading from '../components/Loading';
 
 const Blog = () => {
   const { session } = useAuth();
@@ -63,7 +64,7 @@ const Blog = () => {
   }, [username]);
 
   if (loading) {
-    return <div className="text-center py-16">加载中...</div>;
+    return <Loading />;
   }
 
   // 处理搜索提交

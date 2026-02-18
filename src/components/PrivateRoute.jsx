@@ -1,16 +1,13 @@
 import { Navigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
+import Loading from './Loading';
 
 const PrivateRoute = ({ children }) => {
   const { session, loading } = useAuth();
 
   // 正在加载时显示加载提示
   if (loading) {
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[#ECFEFF]">
-        <p className="text-xl text-[#164E63]">Loading...</p>
-      </div>
-    );
+    return <Loading />;
   }
 
   // 用户已登录，渲染子组件

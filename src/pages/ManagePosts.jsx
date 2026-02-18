@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import supabase from '../services/SupabaseClient';
+import Loading from '../components/Loading';
 
 const ManagePosts = () => {
   const { session } = useAuth();
@@ -122,11 +123,7 @@ const ManagePosts = () => {
   }
 
   if (loading) {
-    return (
-      <div className="container mx-auto max-w-4xl px-4 md:px-6 py-12">
-        <h2 className="text-2xl font-bold font-['Outfit',sans-serif] text-[#164E63] mb-4">加载中...</h2>
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

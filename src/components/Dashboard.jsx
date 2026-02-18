@@ -3,6 +3,7 @@ import { useAuth } from '../contexts/AuthContext';
 import PrivateRoute from './PrivateRoute';
 import Layout from './Layout';
 import supabase from '../services/SupabaseClient';
+import Loading from './Loading';
 
 const DashboardContent = () => {
   const { session } = useAuth();
@@ -119,7 +120,7 @@ const DashboardContent = () => {
   };
 
   if (loading) {
-    return <div className="text-center py-16">加载中...</div>;
+    return <Loading />;
   }
 
   return (
