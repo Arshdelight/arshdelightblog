@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import supabase from '../services/SupabaseClient';
@@ -10,10 +10,26 @@ const ManagePosts = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  // 缓存
+  const prevSessionRef = useRef(null);
+  const postsCacheRef = useRef(null);
 
   useEffect(() => {
+    // 检查是否需要重新加载数据
+    const shouldReload = !session || 
+                       !prevSessionRef.current || 
+                       session.user.id !== prevSessionRef.current.user.id ||
+                       !postsCacheRef.current;
+
     if (session) {
-      fetchUserPosts();
+      if (shouldReload) {
+        fetchUserPosts();
+      } else {
+        // 使用缓存数据
+        setPosts(postsCacheRef.current);
+        setLoading(false);
+      }
     }
   }, [session]);
 
@@ -32,7 +48,10 @@ const ManagePosts = () => {
         throw error;
       }
 
+      // 更新状态和缓存
       setPosts(data);
+      postsCacheRef.current = data;
+      prevSessionRef.current = session;
     } catch (err) {
       console.error('Error fetching posts:', err);
       setError('获取文章失败');

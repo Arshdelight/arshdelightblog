@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useAuth } from '../contexts/AuthContext';
 import Editor from 'react-markdown-editor-lite';
@@ -14,6 +14,7 @@ const EditPost = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   
+  // 状态
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [slug, setSlug] = useState('');
@@ -22,6 +23,10 @@ const EditPost = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  
+  // 缓存
+  const prevSessionRef = useRef(null);
+  const postCacheRef = useRef(null);
 
   // 加载文章数据
   useEffect(() => {
@@ -45,10 +50,13 @@ const EditPost = () => {
           throw new Error('你没有权限编辑这篇文章');
         }
 
+        // 更新状态和缓存
         setTitle(data.title);
         setContent(data.content);
         setSlug(data.slug);
         setIsPublished(data.is_published);
+        postCacheRef.current = data;
+        prevSessionRef.current = session;
       } catch (err) {
         console.error('Error fetching post:', err);
         setError(err.message || '获取文章失败');
@@ -57,8 +65,25 @@ const EditPost = () => {
       }
     };
 
+    // 检查是否需要重新加载数据
+    const shouldReload = !session || 
+                       !prevSessionRef.current || 
+                       session.user.id !== prevSessionRef.current.user.id ||
+                       !postCacheRef.current ||
+                       postCacheRef.current.author_id !== session.user.id;
+
     if (session && id) {
-      fetchPost();
+      if (shouldReload) {
+        fetchPost();
+      } else {
+        // 使用缓存数据
+        const cachedPost = postCacheRef.current;
+        setTitle(cachedPost.title);
+        setContent(cachedPost.content);
+        setSlug(cachedPost.slug);
+        setIsPublished(cachedPost.is_published);
+        setLoading(false);
+      }
     }
   }, [session, id]);
 
