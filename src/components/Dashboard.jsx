@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useAuth } from '../contexts/AuthContext';
 import PrivateRoute from './PrivateRoute';
 import Layout from './Layout';
@@ -17,6 +17,10 @@ const DashboardContent = () => {
     avatar_url: '',
     bio: ''
   });
+  
+  // 缓存
+  const prevSessionRef = useRef(null);
+  const profileCacheRef = useRef(null);
 
   // 获取用户资料
   useEffect(() => {
@@ -38,12 +42,15 @@ const DashboardContent = () => {
           throw error;
         }
 
+        // 更新状态和缓存
         setProfile(data);
         setFormData({
           username: data.username || '',
           avatar_url: data.avatar_url || '',
           bio: data.bio || ''
         });
+        profileCacheRef.current = data;
+        prevSessionRef.current = session;
       } catch (error) {
         console.error('Error fetching profile:', error);
         setError('获取个人资料失败');
@@ -52,7 +59,28 @@ const DashboardContent = () => {
       }
     };
 
-    fetchProfile();
+    // 检查是否需要重新加载数据
+    const shouldReload = !session?.user?.id || 
+                       !prevSessionRef.current?.user?.id || 
+                       session.user.id !== prevSessionRef.current.user.id ||
+                       !profileCacheRef.current ||
+                       profileCacheRef.current.id !== session.user.id;
+
+    if (session?.user?.id) {
+      if (shouldReload) {
+        fetchProfile();
+      } else {
+        // 使用缓存数据
+        const cachedProfile = profileCacheRef.current;
+        setProfile(cachedProfile);
+        setFormData({
+          username: cachedProfile.username || '',
+          avatar_url: cachedProfile.avatar_url || '',
+          bio: cachedProfile.bio || ''
+        });
+        setLoading(false);
+      }
+    }
   }, [session?.user?.id]);
 
   // 处理表单输入变化
