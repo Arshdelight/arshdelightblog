@@ -23,6 +23,7 @@ const EditPost = () => {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [hasEdited, setHasEdited] = useState(false);
   
   // 缓存
   const prevSessionRef = useRef(null);
@@ -75,21 +76,26 @@ const EditPost = () => {
     if (session && id) {
       if (shouldReload) {
         fetchPost();
-      } else {
-        // 使用缓存数据
+      } else if (!hasEdited) {
+        // 只有在用户未编辑的情况下才使用缓存数据
         const cachedPost = postCacheRef.current;
         setTitle(cachedPost.title);
         setContent(cachedPost.content);
         setSlug(cachedPost.slug);
         setIsPublished(cachedPost.is_published);
         setLoading(false);
+      } else {
+        // 用户已经编辑了内容，不使用缓存数据
+        setLoading(false);
       }
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [session, id]);
 
   // 处理 Markdown 编辑器内容变化
   const handleEditorChange = ({ text }) => {
     setContent(text);
+    setHasEdited(true);
   };
 
   // 生成 slug
@@ -106,6 +112,7 @@ const EditPost = () => {
   const handleTitleChange = (e) => {
     const newTitle = e.target.value;
     setTitle(newTitle);
+    setHasEdited(true);
     if (!slug) {
       setSlug(generateSlug(newTitle));
     }
@@ -238,7 +245,10 @@ const EditPost = () => {
             type="text"
             id="slug"
             value={slug}
-            onChange={(e) => setSlug(e.target.value)}
+            onChange={(e) => {
+              setSlug(e.target.value);
+              setHasEdited(true);
+            }}
             className="w-full px-4 py-3 bg-[#ECFEFF] text-[#164E63] border border-[#22D3EE]/30 rounded-lg focus:outline-none focus:border-[#0891B2] transition-colors"
             placeholder="请输入友好的 URL 路径"
             required
@@ -271,7 +281,10 @@ const EditPost = () => {
             <input
               type="checkbox"
               checked={isPublished}
-              onChange={(e) => setIsPublished(e.target.checked)}
+              onChange={(e) => {
+                setIsPublished(e.target.checked);
+                setHasEdited(true);
+              }}
               className="w-4 h-4 text-[#0891B2] focus:ring-[#0891B2] border-[#22D3EE]/30 rounded"
             />
             <span className="text-sm font-medium text-[#164E63]/80">
